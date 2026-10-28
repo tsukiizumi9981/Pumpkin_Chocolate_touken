@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>刀劍男士剪影圖鑑</title>
+<style>
+:root { color-scheme: light; --ink:#292929; --muted:#6d6d6d; --line:#dedede; --paper:#f7f7f5; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif; }
+header { padding:28px 20px 20px; background:#fff; border-bottom:1px solid var(--line); }
+.wrap { max-width:1440px; margin:0 auto; }
+h1 { margin:0 0 8px; font-size:clamp(24px,3vw,34px); letter-spacing:.04em; }
+.sub { color:var(--muted); margin:0; line-height:1.6; }
+.controls { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+input { flex:1; min-width:220px; border:1px solid #ccc; border-radius:10px; padding:12px 14px; font:inherit; background:white; }
+button { border:1px solid #ccc; background:white; border-radius:10px; padding:10px 14px; font:inherit; cursor:pointer; }
+button:hover { background:#f0f0ee; }
+main { max-width:1440px; margin:0 auto; padding:20px; }
+.meta { display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:14px; margin:0 0 14px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+.card { border:1px solid var(--line); background:#fff; border-radius:12px; padding:10px; cursor:pointer; text-align:center; transition:transform .12s, box-shadow .12s; }
+.card:hover { transform:translateY(-2px); box-shadow:0 5px 18px #00000012; }
+.card img { width:100%; height:auto; display:block; }
+.card .name { font-weight:650; margin-top:8px; font-size:14px; }
+.card .hint { color:var(--muted); font-size:12px; margin-top:3px; }
+footer { text-align:center; color:var(--muted); padding:28px 16px 36px; font-size:13px; }
+dialog { border:0; border-radius:16px; padding:0; max-width:min(92vw,700px); width:100%; box-shadow:0 20px 80px #0005; }
+dialog::backdrop { background:#0009; }
+.modal-head { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--line); }
+.modal-body { padding:16px; text-align:center; max-height:78vh; overflow:auto; }
+.modal-body img { max-width:100%; max-height:70vh; object-fit:contain; }
+@media(max-width:500px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:14px; } }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>刀劍男士剪影圖鑑</h1>
+<p class="sub">將兩張原始圖依相同順序配對：上半身剪影＋下半身剪影。點選任一組可放大查看。</p>
+<div class="controls">
+<input id="search" type="search" placeholder="搜尋組別，例如：第 12 組" aria-label="搜尋組別">
+<button id="reset" type="button">顯示全部</button>
+</div>
+</div></header>
+<main>
+<div class="meta"><span id="count">共 101 組</span><span>依原圖排列順序</span></div>
+<div class="grid" id="grid"></div>
+</main>
+<footer>剪影圖片由使用者提供；此頁為本地簡易圖鑑，可離線瀏覽。</footer>
+<dialog id="viewer">
+<div class="modal-head"><strong id="modalTitle">剪影組</strong><button id="close" type="button">關閉 ✕</button></div>
+<div class="modal-body"><img id="modalImage" alt="放大的剪影配對"></div>
+</dialog>
+<script>
+const characters = [{"id": 1, "name": "第 1 組", "image": "assets/character-001.jpg"}, {"id": 2, "name": "第 2 組", "image": "assets/character-002.jpg"}, {"id": 3, "name": "第 3 組", "image": "assets/character-003.jpg"}, {"id": 4, "name": "第 4 組", "image": "assets/character-004.jpg"}, {"id": 5, "name": "第 5 組", "image": "assets/character-005.jpg"}, {"id": 6, "name": "第 6 組", "image": "assets/character-006.jpg"}, {"id": 7, "name": "第 7 組", "image": "assets/character-007.jpg"}, {"id": 8, "name": "第 8 組", "image": "assets/character-008.jpg"}, {"id": 9, "name": "第 9 組", "image": "assets/character-009.jpg"}, {"id": 10, "name": "第 10 組", "image": "assets/character-010.jpg"}, {"id": 11, "name": "第 11 組", "image": "assets/character-011.jpg"}, {"id": 12, "name": "第 12 組", "image": "assets/character-012.jpg"}, {"id": 13, "name": "第 13 組", "image": "assets/character-013.jpg"}, {"id": 14, "name": "第 14 組", "image": "assets/character-014.jpg"}, {"id": 15, "name": "第 15 組", "image": "assets/character-015.jpg"}, {"id": 16, "name": "第 16 組", "image": "assets/character-016.jpg"}, {"id": 17, "name": "第 17 組", "image": "assets/character-017.jpg"}, {"id": 18, "name": "第 18 組", "image": "assets/character-018.jpg"}, {"id": 19, "name": "第 19 組", "image": "assets/character-019.jpg"}, {"id": 20, "name": "第 20 組", "image": "assets/character-020.jpg"}, {"id": 21, "name": "第 21 組", "image": "assets/character-021.jpg"}, {"id": 22, "name": "第 22 組", "image": "assets/character-022.jpg"}, {"id": 23, "name": "第 23 組", "image": "assets/character-023.jpg"}, {"id": 24, "name": "第 24 組", "image": "assets/character-024.jpg"}, {"id": 25, "name": "第 25 組", "image": "assets/character-025.jpg"}, {"id": 26, "name": "第 26 組", "image": "assets/character-026.jpg"}, {"id": 27, "name": "第 27 組", "image": "assets/character-027.jpg"}, {"id": 28, "name": "第 28 組", "image": "assets/character-028.jpg"}, {"id": 29, "name": "第 29 組", "image": "assets/character-029.jpg"}, {"id": 30, "name": "第 30 組", "image": "assets/character-030.jpg"}, {"id": 31, "name": "第 31 組", "image": "assets/character-031.jpg"}, {"id": 32, "name": "第 32 組", "image": "assets/character-032.jpg"}, {"id": 33, "name": "第 33 組", "image": "assets/character-033.jpg"}, {"id": 34, "name": "第 34 組", "image": "assets/character-034.jpg"}, {"id": 35, "name": "第 35 組", "image": "assets/character-035.jpg"}, {"id": 36, "name": "第 36 組", "image": "assets/character-036.jpg"}, {"id": 37, "name": "第 37 組", "image": "assets/character-037.jpg"}, {"id": 38, "name": "第 38 組", "image": "assets/character-038.jpg"}, {"id": 39, "name": "第 39 組", "image": "assets/character-039.jpg"}, {"id": 40, "name": "第 40 組", "image": "assets/character-040.jpg"}, {"id": 41, "name": "第 41 組", "image": "assets/character-041.jpg"}, {"id": 42, "name": "第 42 組", "image": "assets/character-042.jpg"}, {"id": 43, "name": "第 43 組", "image": "assets/character-043.jpg"}, {"id": 44, "name": "第 44 組", "image": "assets/character-044.jpg"}, {"id": 45, "name": "第 45 組", "image": "assets/character-045.jpg"}, {"id": 46, "name": "第 46 組", "image": "assets/character-046.jpg"}, {"id": 47, "name": "第 47 組", "image": "assets/character-047.jpg"}, {"id": 48, "name": "第 48 組", "image": "assets/character-048.jpg"}, {"id": 49, "name": "第 49 組", "image": "assets/character-049.jpg"}, {"id": 50, "name": "第 50 組", "image": "assets/character-050.jpg"}, {"id": 51, "name": "第 51 組", "image": "assets/character-051.jpg"}, {"id": 52, "name": "第 52 組", "image": "assets/character-052.jpg"}, {"id": 53, "name": "第 53 組", "image": "assets/character-053.jpg"}, {"id": 54, "name": "第 54 組", "image": "assets/character-054.jpg"}, {"id": 55, "name": "第 55 組", "image": "assets/character-055.jpg"}, {"id": 56, "name": "第 56 組", "image": "assets/character-056.jpg"}, {"id": 57, "name": "第 57 組", "image": "assets/character-057.jpg"}, {"id": 58, "name": "第 58 組", "image": "assets/character-058.jpg"}, {"id": 59, "name": "第 59 組", "image": "assets/character-059.jpg"}, {"id": 60, "name": "第 60 組", "image": "assets/character-060.jpg"}, {"id": 61, "name": "第 61 組", "image": "assets/character-061.jpg"}, {"id": 62, "name": "第 62 組", "image": "assets/character-062.jpg"}, {"id": 63, "name": "第 63 組", "image": "assets/character-063.jpg"}, {"id": 64, "name": "第 64 組", "image": "assets/character-064.jpg"}, {"id": 65, "name": "第 65 組", "image": "assets/character-065.jpg"}, {"id": 66, "name": "第 66 組", "image": "assets/character-066.jpg"}, {"id": 67, "name": "第 67 組", "image": "assets/character-067.jpg"}, {"id": 68, "name": "第 68 組", "image": "assets/character-068.jpg"}, {"id": 69, "name": "第 69 組", "image": "assets/character-069.jpg"}, {"id": 70, "name": "第 70 組", "image": "assets/character-070.jpg"}, {"id": 71, "name": "第 71 組", "image": "assets/character-071.jpg"}, {"id": 72, "name": "第 72 組", "image": "assets/character-072.jpg"}, {"id": 73, "name": "第 73 組", "image": "assets/character-073.jpg"}, {"id": 74, "name": "第 74 組", "image": "assets/character-074.jpg"}, {"id": 75, "name": "第 75 組", "image": "assets/character-075.jpg"}, {"id": 76, "name": "第 76 組", "image": "assets/character-076.jpg"}, {"id": 77, "name": "第 77 組", "image": "assets/character-077.jpg"}, {"id": 78, "name": "第 78 組", "image": "assets/character-078.jpg"}, {"id": 79, "name": "第 79 組", "image": "assets/character-079.jpg"}, {"id": 80, "name": "第 80 組", "image": "assets/character-080.jpg"}, {"id": 81, "name": "第 81 組", "image": "assets/character-081.jpg"}, {"id": 82, "name": "第 82 組", "image": "assets/character-082.jpg"}, {"id": 83, "name": "第 83 組", "image": "assets/character-083.jpg"}, {"id": 84, "name": "第 84 組", "image": "assets/character-084.jpg"}, {"id": 85, "name": "第 85 組", "image": "assets/character-085.jpg"}, {"id": 86, "name": "第 86 組", "image": "assets/character-086.jpg"}, {"id": 87, "name": "第 87 組", "image": "assets/character-087.jpg"}, {"id": 88, "name": "第 88 組", "image": "assets/character-088.jpg"}, {"id": 89, "name": "第 89 組", "image": "assets/character-089.jpg"}, {"id": 90, "name": "第 90 組", "image": "assets/character-090.jpg"}, {"id": 91, "name": "第 91 組", "image": "assets/character-091.jpg"}, {"id": 92, "name": "第 92 組", "image": "assets/character-092.jpg"}, {"id": 93, "name": "第 93 組", "image": "assets/character-093.jpg"}, {"id": 94, "name": "第 94 組", "image": "assets/character-094.jpg"}, {"id": 95, "name": "第 95 組", "image": "assets/character-095.jpg"}, {"id": 96, "name": "第 96 組", "image": "assets/character-096.jpg"}, {"id": 97, "name": "第 97 組", "image": "assets/character-097.jpg"}, {"id": 98, "name": "第 98 組", "image": "assets/character-098.jpg"}, {"id": 99, "name": "第 99 組", "image": "assets/character-099.jpg"}, {"id": 100, "name": "第 100 組", "image": "assets/character-100.jpg"}, {"id": 101, "name": "第 101 組", "image": "assets/character-101.jpg"}];
+const grid = document.getElementById('grid');
+const search = document.getElementById('search');
+const count = document.getElementById('count');
+const viewer = document.getElementById('viewer');
+function render() {
+  const q = search.value.trim().toLowerCase();
+  const filtered = characters.filter(c => c.name.toLowerCase().includes(q) || String(c.id).includes(q));
+  grid.innerHTML = '';
+  filtered.forEach(c => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card';
+    card.setAttribute('aria-label', '查看' + c.name);
+    card.innerHTML = `<img src="${c.image}" loading="lazy" alt="${c.name}剪影配對"><div class="name">${c.name}</div><div class="hint">點選放大</div>`;
+    card.addEventListener('click', () => {
+      document.getElementById('modalTitle').textContent = c.name;
+      document.getElementById('modalImage').src = c.image;
+      document.getElementById('modalImage').alt = c.name + '剪影配對';
+      viewer.showModal();
+    });
+    grid.appendChild(card);
+  });
+  count.textContent = `顯示 ${filtered.length} / ${characters.length} 組`;
+}
+search.addEventListener('input', render);
+document.getElementById('reset').addEventListener('click', () => { search.value=''; render(); });
+document.getElementById('close').addEventListener('click', () => viewer.close());
+viewer.addEventListener('click', e => { if (e.target === viewer) viewer.close(); });
+render();
+</script>
+</body>
+</html>
